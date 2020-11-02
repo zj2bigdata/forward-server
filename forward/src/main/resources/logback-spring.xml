@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<!-- 读取spring.application.name中的属性来生成日志文件名 -->
+	<springProperty scope="context" name="logName"
+		source="spring.application.name" defaultValue="forward" />
+
+	<!-- 文件输出默认格式 -->
+	<!--<property name="PATTERN"-->
+	<!--value="%-12(%d{yyyy-MM-dd HH:mm:ss.SSS}) |-%-5level [%thread] %c [%L] -| %msg%n" />-->
+    <!-- 文件输出彩色级别格式 -->
+	<property name="PATTERN"
+		value="%-12(%d{yyyy-MM-dd HH:mm:ss.SSS}) |-%highlight(%-5level) |  %boldYellow([%thread]) %boldGreen(%c [%L]) -| %msg%n" />
+	<!-- test文件路径 -->
+	<!-- <property name="TEST_FILE_PATH" value="log/geodoc.log" /> -->
+	<!-- pro文件路径 -->
+	<!-- <property name="PRO_FILE_PATH" value="log/geodoc.log" /> -->
+
+	<!-- 控制台输出 -->
+	<appender name="CONSOLE"
+		class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>${PATTERN}</pattern>
+		</encoder>
+	</appender>
+
+	<!-- 开发环境 -->
+	<springProfile name="dev">
+		<root level="info">
+			<appender-ref ref="CONSOLE" />
+		</root>
+	</springProfile>
+
+	<!-- 本地测试环境 -->
+	<springProfile name="native">
+		<!-- 每天产生一个文件 -->
+		<appender name="LOCAL-TEST-FILE"
+				  class="ch.qos.logback.core.rolling.RollingFileAppender">
+			<!-- 文件路径 -->
+			<file>log/${logName}/${logName}.log</file>
+			<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+				<!-- 文件名称 -->
+				<fileNamePattern>log/${logName}/${logName}-info.%d{yyyy-MM-dd}.log
+				</fileNamePattern>
+				<!-- 文件最大保存历史数量 -->
+				<MaxHistory>10</MaxHistory>
+			</rollingPolicy>
+			<layout class="ch.qos.logback.classic.PatternLayout">
+				<pattern>${PATTERN}</pattern>
+			</layout>
+		</appender>
+		<!-- <logger name="com.light.springboot" level="debug" /> -->
+		<root level="info">
+			<appender-ref ref="CONSOLE" />
+			<appender-ref ref="LOCAL-TEST-FILE" />
+		</root>
+	</springProfile>
+
+	<!-- 生产环境测试环境 -->
+	<springProfile name="test">
+		<!-- 每天产生一个文件 -->
+		<appender name="TEST-FILE"
+			class="ch.qos.logback.core.rolling.RollingFileAppender">
+			<!-- 文件路径 -->
+			<file>log/${logName}/${logName}.log</file>
+			<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+				<!-- 文件名称 -->
+				<fileNamePattern>log/${logName}/${logName}-info.%d{yyyy-MM-dd}.log
+				</fileNamePattern>
+				<!-- 文件最大保存历史数量 -->
+				<MaxHistory>10</MaxHistory>
+			</rollingPolicy>
+			<layout class="ch.qos.logback.classic.PatternLayout">
+				<pattern>${PATTERN}</pattern>
+			</layout>
+		</appender>
+		<!-- <logger name="com.light.springboot" level="debug" /> -->
+		<root level="info">
+			<appender-ref ref="CONSOLE" />
+			<appender-ref ref="TEST-FILE" />
+		</root>
+	</springProfile>
+
+	<!-- 生产环境 -->
+	<springProfile name="prod">
+		<appender name="PROD_FILE"
+			class="ch.qos.logback.core.rolling.RollingFileAppender">
+			<file>log/${logName}/${logName}.log</file>
+			<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+				<fileNamePattern>log/${logName}/${logName}-info.%d{yyyy-MM-dd}.log
+				</fileNamePattern>
+				<MaxHistory>10</MaxHistory>
+			</rollingPolicy>
+			<layout class="ch.qos.logback.classic.PatternLayout">
+				<pattern>${PATTERN}</pattern>
+			</layout>
+		</appender>
+		<root level="info">
+			<appender-ref ref="CONSOLE" />
+			<appender-ref ref="PROD_FILE" />
+		</root>
+	</springProfile>
+</configuration>
